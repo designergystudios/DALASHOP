@@ -4,7 +4,7 @@ import { useAppStore } from '../../store/useAppStore';
 import { databaseService } from '../../services/supabaseClient';
 
 export const AdQueueManager: React.FC = () => {
-  const { adRequests, processAdApproval, formatPrice } = useAppStore();
+  const { adRequests, processAdApproval, formatPrice, toggleStallShowcase, showcaseAdverts } = useAppStore();
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-4 sm:pt-6 space-y-6">
@@ -87,12 +87,18 @@ export const AdQueueManager: React.FC = () => {
                 <button
                   onClick={() => {
                     processAdApproval(ad.id, 'approved');
+                    if (ad.placement === 'Featured Showcase Billboard') {
+                      const alreadyShowcased = showcaseAdverts.some((s) => s.stallId === ad.vendorId);
+                      if (!alreadyShowcased) {
+                        toggleStallShowcase(ad.vendorId);
+                      }
+                    }
                     databaseService.broadcastDatabaseEvent({
                       id: `evt-ad-${Date.now()}`,
                       table: 'ad_design_requests',
                       eventType: 'UPDATE',
                       timestamp: new Date().toLocaleTimeString(),
-                      recordSummary: `Ad Campaign Activated: "${ad.campaignTitle}" for ${ad.stallName}`,
+                      recordSummary: `Ad Campaign Activated: "${ad.campaignTitle}" for ${ad.stallName} (${ad.placement})`,
                       latencyMs: 22,
                       payload: { ad_id: ad.id, status: 'approved', placement: ad.placement },
                     });

@@ -77,6 +77,19 @@ interface AppState {
   activeVendorStallId: string;
   setActiveVendorStallId: (stallId: string) => void;
   updateStallCustomization: (stallId: string, updates: Partial<Stall>) => void;
+  addVendorStall: (stall: {
+    name: string;
+    ownerName: string;
+    districtId: string;
+    category: string;
+    tier: 'Micro-Stall' | 'Boutique Kiosk' | 'Flagship Pavilion';
+    plotNumber: string;
+    bannerUrl: string;
+    avatarUrl: string;
+    bio: string;
+    contactMpesa: string;
+    monthlyRentKes: number;
+  }) => void;
   addListing: (
     listing: Omit<ListingItem, 'id' | 'stallId' | 'stallName' | 'rating' | 'reviewCount'>
   ) => void;
@@ -208,8 +221,37 @@ export const useAppStore = create<AppState>()(
         }));
       },
 
+      addVendorStall: (stallData) => {
+        const stallId = `stall-${Date.now()}`;
+        const newStall: Stall = {
+          id: stallId,
+          ...stallData,
+          status: 'active',
+          rating: 5.0,
+          footfallToday: Math.floor(Math.random() * 200) + 50,
+          salesMonthKes: stallData.monthlyRentKes * 4,
+          verified: true,
+          themeColor: '#ea580c',
+        };
+        const newLease: LeaseSubscription = {
+          stallId,
+          stallName: stallData.name,
+          ownerName: stallData.ownerName,
+          tier: stallData.tier,
+          monthlyRentKes: stallData.monthlyRentKes,
+          nextBillingDate: 'In 30 days',
+          paymentMethod: 'M-Pesa Auto-Stk',
+          status: 'paid',
+        };
+        set((state) => ({
+          stalls: [newStall, ...state.stalls],
+          leases: [newLease, ...state.leases],
+          activeVendorStallId: stallId,
+        }));
+      },
+
       addListing: (newListingData) => {
-        const { activeVendorStallId, stalls } = get();
+        const { activeVendorStallId, stalls, weeklyOffers } = get();
         const stall = stalls.find((s) => s.id === activeVendorStallId);
         const newListing: ListingItem = {
           ...newListingData,
@@ -219,9 +261,36 @@ export const useAppStore = create<AppState>()(
           rating: 5.0,
           reviewCount: 1,
         };
-        set((state) => ({
-          listings: [newListing, ...state.listings],
-        }));
+
+        if (newListingData.isOfferOfTheWeek) {
+          const orig = newListingData.originalPriceKes || Math.round(newListingData.priceKes * 1.25);
+          const discountPct = newListingData.discountPercent || Math.round(((orig - newListingData.priceKes) / orig) * 100);
+          const newWeeklyOffer: WeeklyOffer = {
+            id: `deal-${Date.now()}`,
+            listingId: newListing.id,
+            stallId: newListing.stallId,
+            stallName: newListing.stallName,
+            title: newListing.title,
+            originalPriceKes: orig,
+            salePriceKes: newListing.priceKes,
+            discountPercent: discountPct,
+            thumbnail: newListing.thumbnail,
+            category: newListing.category.toUpperCase(),
+            districtName: stall?.plotNumber || newListing.location,
+            endsInHours: 48,
+            claimedCount: 0,
+            totalAvailable: 25,
+            badge: newListing.badge || 'New Special Offer',
+          };
+          set((state) => ({
+            listings: [newListing, ...state.listings],
+            weeklyOffers: [newWeeklyOffer, ...state.weeklyOffers],
+          }));
+        } else {
+          set((state) => ({
+            listings: [newListing, ...state.listings],
+          }));
+        }
       },
 
       deleteListing: (listingId) => {

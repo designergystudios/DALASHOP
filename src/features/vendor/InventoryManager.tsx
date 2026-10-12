@@ -1,5 +1,17 @@
 import React, { useState } from 'react';
-import { Plus, Trash2, CheckCircle2, XCircle, Package, Calendar, Tag, DollarSign, X } from 'lucide-react';
+import {
+  Plus,
+  Trash2,
+  CheckCircle2,
+  XCircle,
+  Package,
+  Calendar,
+  Tag,
+  DollarSign,
+  X,
+  Flame,
+  Sparkles,
+} from 'lucide-react';
 import { useAppStore } from '../../store/useAppStore';
 import { ListingCategory, ListingItem } from '../../types';
 import { StorageMediaUploader } from '../../components/common/StorageMediaUploader';
@@ -12,6 +24,7 @@ export const InventoryManager: React.FC = () => {
     addListing,
     deleteListing,
     toggleListingAvailability,
+    toggleListingOfferOfTheWeek,
     formatPrice,
   } = useAppStore();
 
@@ -26,25 +39,35 @@ export const InventoryManager: React.FC = () => {
   const [description, setDescription] = useState('');
   const [thumbnail, setThumbnail] = useState('https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&w=600&q=75');
   const [dates, setDates] = useState('');
+  const [isOffer, setIsOffer] = useState(false);
+  const [discountPct, setDiscountPct] = useState(20);
+  const [dealBadge, setDealBadge] = useState('🔥 Weekly Deal');
 
   const handleCreateItem = (e: React.FormEvent) => {
     e.preventDefault();
+    const originalPrice = isOffer ? Math.round(priceKes / (1 - discountPct / 100)) : undefined;
+
     addListing({
       title,
       category,
       type,
       priceKes,
+      originalPriceKes: originalPrice,
       description,
       thumbnail,
       location: `${currentStall.name} (${currentStall.plotNumber})`,
       districtId: currentStall.districtId,
       isAvailable: true,
       dates: type === 'stay' || type === 'event' ? dates : undefined,
+      isOfferOfTheWeek: isOffer,
+      discountPercent: isOffer ? discountPct : undefined,
+      badge: isOffer ? dealBadge : undefined,
     });
 
     // Reset & close
     setTitle('');
     setDescription('');
+    setIsOffer(false);
     setIsAddModalOpen(false);
   };
 
@@ -79,6 +102,7 @@ export const InventoryManager: React.FC = () => {
                 <th className="py-3 px-4">Type</th>
                 <th className="py-3 px-4">Category</th>
                 <th className="py-3 px-4">Price (KES)</th>
+                <th className="py-3 px-4">Special Offer</th>
                 <th className="py-3 px-4">Availability</th>
                 <th className="py-3 px-4 text-right">Actions</th>
               </tr>
@@ -100,7 +124,37 @@ export const InventoryManager: React.FC = () => {
                   </td>
                   <td className="py-3 px-4 capitalize font-medium text-slate-200">{item.type}</td>
                   <td className="py-3 px-4 capitalize text-slate-400">{item.category}</td>
-                  <td className="py-3 px-4 font-bold text-white">{formatPrice(item.priceKes)}</td>
+                  <td className="py-3 px-4 font-bold text-white">
+                    {formatPrice(item.priceKes)}
+                    {item.originalPriceKes && (
+                      <span className="block text-[10px] text-slate-500 line-through font-normal">
+                        {formatPrice(item.originalPriceKes)}
+                      </span>
+                    )}
+                  </td>
+                  <td className="py-3 px-4">
+                    <button
+                      onClick={() => toggleListingOfferOfTheWeek(item.id)}
+                      className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold transition active:scale-95 ${
+                        item.isOfferOfTheWeek
+                          ? 'bg-rose-500/15 text-rose-400 border border-rose-500/40 shadow-xs'
+                          : 'bg-slate-800/80 text-slate-400 border border-slate-700/80 hover:text-white hover:border-slate-600'
+                      }`}
+                      title={item.isOfferOfTheWeek ? 'Click to unmark as Offer of the Week' : 'Click to promote as Offer of the Week'}
+                    >
+                      {item.isOfferOfTheWeek ? (
+                        <>
+                          <Flame className="w-3 h-3 text-rose-400 animate-pulse" />
+                          <span>Offer of Week ({item.discountPercent || 20}% OFF)</span>
+                        </>
+                      ) : (
+                        <>
+                          <Sparkles className="w-3 h-3 text-slate-500" />
+                          <span>Promote as Offer</span>
+                        </>
+                      )}
+                    </button>
+                  </td>
                   <td className="py-3 px-4">
                     <button
                       onClick={() => toggleListingAvailability(item.id)}
@@ -243,6 +297,48 @@ export const InventoryManager: React.FC = () => {
                   />
                 </div>
               )}
+
+              {/* Special Offer Promotion Toggle */}
+              <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 space-y-2.5">
+                <label className="flex items-center gap-2 cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    checked={isOffer}
+                    onChange={(e) => setIsOffer(e.target.checked)}
+                    className="w-4 h-4 rounded text-rose-500 bg-slate-900 border-slate-700 focus:ring-rose-500"
+                  />
+                  <span className="text-xs font-bold text-white flex items-center gap-1.5">
+                    <Flame className="w-3.5 h-3.5 text-rose-400" />
+                    Feature as "Offer of the Week" on Marketplace
+                  </span>
+                </label>
+
+                {isOffer && (
+                  <div className="grid grid-cols-2 gap-3 pt-1 border-t border-slate-900 animate-in fade-in">
+                    <div>
+                      <label className="text-[11px] text-slate-400 block mb-1">Discount %</label>
+                      <input
+                        type="number"
+                        min={5}
+                        max={90}
+                        value={discountPct}
+                        onChange={(e) => setDiscountPct(Number(e.target.value))}
+                        className="w-full px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-rose-500 font-mono text-xs"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[11px] text-slate-400 block mb-1">Marketing Tag</label>
+                      <input
+                        type="text"
+                        value={dealBadge}
+                        onChange={(e) => setDealBadge(e.target.value)}
+                        placeholder="e.g. Flash Deal"
+                        className="w-full px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-rose-500 text-xs"
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
 
               <div>
                 <label className="text-slate-300 font-semibold block mb-1">Description</label>

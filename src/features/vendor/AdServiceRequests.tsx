@@ -16,13 +16,15 @@ export const AdServiceRequests: React.FC = () => {
   const [creativeNotes, setCreativeNotes] = useState('');
 
   // Placement rates per day
-  const dailyRate = {
+  const dailyRate: Record<AdRequest['placement'], number> = {
     'City Square Billboard': 1500,
+    'Featured Showcase Billboard': 1200,
     'District Spotlight': 800,
+    'Offer of the Week Feature': 650,
     'Category Sponsor': 500,
-  }[placement];
+  };
 
-  const estimatedBudget = dailyRate * durationDays;
+  const estimatedBudget = dailyRate[placement] * durationDays;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -62,7 +64,7 @@ export const AdServiceRequests: React.FC = () => {
       </div>
 
       {/* Pricing / Placement Explainer Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
         <div className="p-4 rounded-xl border border-slate-800 bg-slate-900/80 space-y-2">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-white">City Square Billboard</span>
@@ -73,13 +75,33 @@ export const AdServiceRequests: React.FC = () => {
           </p>
         </div>
 
+        <div className="p-4 rounded-xl border border-sky-900/40 bg-sky-950/20 space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold text-sky-300">Featured Showcase Billboard</span>
+            <span className="text-[10px] text-sky-400 font-mono">1,200 KES/day</span>
+          </div>
+          <p className="text-xs text-slate-400 leading-relaxed">
+            Pin your storefront on the interactive billboard strip with live peek inside and artisan bio.
+          </p>
+        </div>
+
+        <div className="p-4 rounded-xl border border-rose-900/40 bg-rose-950/20 space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold text-rose-300">Offer of the Week Feature</span>
+            <span className="text-[10px] text-rose-400 font-mono">650 KES/day</span>
+          </div>
+          <p className="text-xs text-slate-400 leading-relaxed">
+            Headline promotion on the homepage flash-deals carousel with countdown timer & discount badge.
+          </p>
+        </div>
+
         <div className="p-4 rounded-xl border border-slate-800 bg-slate-900/80 space-y-2">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-white">District Spotlight</span>
             <span className="text-[10px] text-emerald-400 font-mono">800 KES/day</span>
           </div>
           <p className="text-xs text-slate-400 leading-relaxed">
-            Pinned banner inside your specific district (e.g. Nairobi Souk or Kisumu Lakefront).
+            Pinned banner inside your specific district (e.g. Retail Avenue or Hospitality Hills).
           </p>
         </div>
 
@@ -89,7 +111,7 @@ export const AdServiceRequests: React.FC = () => {
             <span className="text-[10px] text-emerald-400 font-mono">500 KES/day</span>
           </div>
           <p className="text-xs text-slate-400 leading-relaxed">
-            Top position across category filters (Fashion, Crafts, Stays, Events).
+            Top position across category filters (Fashion, Crafts, Stays, Events, Food).
           </p>
         </div>
       </div>
@@ -178,6 +200,8 @@ export const AdServiceRequests: React.FC = () => {
                   className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white focus:outline-none focus:border-emerald-500"
                 >
                   <option value="City Square Billboard">City Square Billboard (1,500 KES/day)</option>
+                  <option value="Featured Showcase Billboard">Featured Showcase Billboard (1,200 KES/day)</option>
+                  <option value="Offer of the Week Feature">Offer of the Week Feature (650 KES/day)</option>
                   <option value="District Spotlight">District Spotlight (800 KES/day)</option>
                   <option value="Category Sponsor">Category Sponsor (500 KES/day)</option>
                 </select>

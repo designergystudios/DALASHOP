@@ -80,7 +80,12 @@ export interface AdRequest {
   vendorId: string;
   stallName: string;
   campaignTitle: string;
-  placement: 'City Square Billboard' | 'District Spotlight' | 'Category Sponsor';
+  placement:
+    | 'City Square Billboard'
+    | 'District Spotlight'
+    | 'Category Sponsor'
+    | 'Featured Showcase Billboard'
+    | 'Offer of the Week Feature';
   durationDays: number;
   budgetKes: number;
   status: 'pending_review' | 'approved' | 'active' | 'rejected';
