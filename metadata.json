@@ -1,0 +1,6 @@
+{
+  "name": "Dala - Virtual City SaaS",
+  "description": "Mobile-first virtual city SaaS platform and digital marketplace optimized for East Africa commerce, events, stays, and artisan vendors.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

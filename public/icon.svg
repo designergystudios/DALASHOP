@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="dalaGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f97316"/>
+      <stop offset="50%" stop-color="#ea580c"/>
+      <stop offset="100%" stop-color="#0284c7"/>
+    </linearGradient>
+    <radialGradient id="skyGlow" cx="50%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#090d16"/>
+    </radialGradient>
+  </defs>
+  <!-- Background -->
+  <rect width="512" height="512" rx="108" fill="url(#skyGlow)"/>
+  
+  <!-- Geometric City Grid Lines -->
+  <path d="M 64 360 L 256 240 L 448 360 L 256 460 Z" fill="none" stroke="#ea580c" stroke-opacity="0.3" stroke-width="3"/>
+  <path d="M 128 320 L 256 240 L 384 320 L 256 400 Z" fill="none" stroke="#38bdf8" stroke-opacity="0.25" stroke-width="2"/>
+  
+  <!-- Virtual City Skyline & Monoliths -->
+  <polygon points="170,300 210,270 210,180 170,210" fill="#ea580c" fill-opacity="0.85"/>
+  <polygon points="210,270 256,296 256,150 210,180" fill="#f97316"/>
+  <polygon points="170,210 210,180 256,150 216,180" fill="#fdba74"/>
+
+  <!-- Center Flagship Tower ("Dala Tower") -->
+  <polygon points="256,296 302,270 302,110 256,136" fill="#0284c7"/>
+  <polygon points="302,270 342,300 342,160 302,110" fill="#0369a1"/>
+  <polygon points="256,136 302,110 342,160 296,186" fill="#38bdf8"/>
+
+  <!-- Sunrise / Network Pulse -->
+  <circle cx="256" cy="110" r="14" fill="#fbbf24"/>
+  <circle cx="256" cy="110" r="28" fill="none" stroke="#fbbf24" stroke-opacity="0.4" stroke-width="2" stroke-dasharray="4,4"/>
+
+  <!-- "DALA" Modern Letterform Accent -->
+  <path d="M 160 410 Q 256 440 352 410" fill="none" stroke="#f97316" stroke-width="6" stroke-linecap="round"/>
+</svg>
